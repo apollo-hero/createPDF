@@ -197,17 +197,17 @@ function createPDF(excelFile, imgPath, output, csvFile) {
 
 					});
 
-					// add id
+				// add id
 				doc.fillColor("black")
-				.fontSize(FONTSIZE)
-				.font('Times-Roman')
-				.text('#' + next_id + "-" + page_number, 0, cmToPt(0.5), {
-					width: doc.page.width,
-					height: FONTSIZE + 0.1,
-					align: 'center'
-				});
+					.fontSize(FONTSIZE)
+					.font('Times-Roman')
+					.text('#' + next_id + "-" + page_number, 0, cmToPt(0.5), {
+						width: doc.page.width,
+						height: FONTSIZE + 0.1,
+						align: 'center'
+					});
 
-					largeHeight1 = FONTSIZE + 0.1 + MARGIN_Y;
+				largeHeight1 = FONTSIZE + 0.1 + MARGIN_Y;
 				if (largeHeight1 >= cmToPt(26.5))	// over top 2cm, bottom 28.7
 				{
 					cur_Y = (cmToPt(29.7) - largeHeight) / 2;
@@ -236,6 +236,8 @@ function createPDF(excelFile, imgPath, output, csvFile) {
 		newpage = false;
 		n_lines = 0;
 		page_number = 0;
+		lines = []
+		lineData = [];
 
 		writeData1(readdata);
 
@@ -245,7 +247,7 @@ function createPDF(excelFile, imgPath, output, csvFile) {
 
 		// Init doc
 
-		var doc = new PDFDocument({
+		var newDoc = new PDFDocument({
 			autoFirstPage: false,
 			size: 'A5',             // 15cm * 21cm
 			layout: 'landscape',     //'landscape'
@@ -284,58 +286,60 @@ function createPDF(excelFile, imgPath, output, csvFile) {
 				next_id = next_items[0].id;
 			else
 				next_id = "";
-			pageCheck(items, cur_X, cur_Y, doc);
-			drawItem(doc, cur_X, cur_Y, items, imgPath, output, i + 1);
+			pageCheck(items, cur_X, cur_Y, newDoc);
+			drawItem(newDoc, cur_X, cur_Y, items, imgPath, output, i + 1);
 			if (item_id != next_id) {
 				//pageCheck("", cur_X, cur_Y, doc);
-				writeID(doc, item_id, cur_X, cur_Y);
-				page_number = 1;
-				doc.addPage();
-				//  red line of workarea
-				doc.rect(cmToPt(1), cmToPt(1), doc.page.width - cmToPt(2), doc.page.height - cmToPt(2))
-					.fillOpacity(1.0)
-					.fillAndStroke("white", "red");
+				writeID(newDoc, item_id, cur_X, cur_Y);
+				if (next_id != "") {
+					page_number = 1;
+					newDoc.addPage();
+					//  red line of workarea
+					newDoc.rect(cmToPt(1), cmToPt(1), newDoc.page.width - cmToPt(2), newDoc.page.height - cmToPt(2))
+						.fillOpacity(1.0)
+						.fillAndStroke("white", "red");
 
-				// pagenumber botton center of page
-				doc.fillColor("black")
-					.fontSize(14)
-					.font('Times-Roman')
-					.text(cPage, 0, cmToPt(14), {
-						width: doc.page.width,
-						height: 14,
-						align: 'center',
+					// pagenumber botton center of page
+					newDoc.fillColor("black")
+						.fontSize(14)
+						.font('Times-Roman')
+						.text(cPage, 0, cmToPt(14), {
+							width: newDoc.page.width,
+							height: 14,
+							align: 'center',
 
-					});
+						});
 
-				// add id
-				doc.fillColor("black")
-				.fontSize(FONTSIZE)
-				.font('Times-Roman')
-				.text('#' + next_id + "-[" + page_number + "/" + page_numbers[next_id] + "]", 0, cmToPt(0.5), {
-					width: doc.page.width,
-					height: FONTSIZE + 0.1,
-					align: 'center'
-				});
+					// add id
+					newDoc.fillColor("black")
+						.fontSize(FONTSIZE)
+						.font('Times-Roman')
+						.text('#' + next_id + "-[" + page_number + "/" + page_numbers[next_id] + "]", 0, cmToPt(0.5), {
+							width: newDoc.page.width,
+							height: FONTSIZE + 0.1,
+							align: 'center'
+						});
 
 					largeHeight1 = FONTSIZE + 0.1 + MARGIN_Y;
-				if (largeHeight1 >= cmToPt(26.5))	// over top 2cm, bottom 28.7
-				{
-					cur_Y = (cmToPt(29.7) - largeHeight) / 2;
+					if (largeHeight1 >= cmToPt(26.5))	// over top 2cm, bottom 28.7
+					{
+						cur_Y = (cmToPt(29.7) - largeHeight) / 2;
+					}
+					else
+						cur_Y = TOP_Y;
+					cPage++;
+					newpage = true;
 				}
-				else
-					cur_Y = TOP_Y;
-				cPage++;
-				newpage = true;
 			}
 		}
 
 		// Write pdf doc.
 
-		doc.pipe(fs.createWriteStream(output))
+		newDoc.pipe(fs.createWriteStream(output))
 			.on('finish', function () {
 				console.log('Done.');
 			});
-		doc.end();
+		newDoc.end();
 
 		deleteFolderRecursive(imgPath + '/temp');
 		deleteFolderRecursive(imgPath + '/strings');
@@ -405,22 +409,22 @@ function pageCheck(items, x, y, doc) {
 				align: 'center',
 
 			});
-		
+
 		// add 
 		var s;
 		if (page_numbers[items[0].id]) {
-			s = "/" + page_numbers[items[0].id] + "]";	
+			s = "/" + page_numbers[items[0].id] + "]";
 		} else {
 			s = "";
 		}
 		doc.fillColor("black")
-		.fontSize(FONTSIZE)
-		.font('Times-Roman')
-		.text('#' + items[0].id + "-[" + page_number + s, 0, cmToPt(0.5), {
-			width: doc.page.width,
-			height: FONTSIZE + 0.1,
-			align: 'center'
-		});
+			.fontSize(FONTSIZE)
+			.font('Times-Roman')
+			.text('#' + items[0].id + "-[" + page_number + s, 0, cmToPt(0.5), {
+				width: doc.page.width,
+				height: FONTSIZE + 0.1,
+				align: 'center'
+			});
 
 		if (largeHeight >= cmToPt(26.5))	// over top 2cm, bottom 28.7
 		{
