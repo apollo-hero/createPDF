@@ -227,8 +227,8 @@ function createPDF(excelFile, imgPath, output, csvFile) {
 		// 	});
 		// doc.end();
 
-		deleteFolderRecursive(imgPath + '/temp');
-		deleteFolderRecursive(imgPath + '/strings');
+		//deleteFolderRecursive(imgPath + '/temp');
+		//deleteFolderRecursive(imgPath + '/strings');
 
 		cPage = 1;              // current page
 		cur_X = CENTER_X;       // current X
@@ -314,7 +314,7 @@ function createPDF(excelFile, imgPath, output, csvFile) {
 					newDoc.fillColor("black")
 						.fontSize(FONTSIZE)
 						.font('Times-Roman')
-						.text('#' + next_id + "-[" + page_number + "/" + page_numbers[next_id] + "]", 0, cmToPt(0.5), {
+						.text('#' + next_id + " - [" + page_number + "/" + page_numbers[next_id] + "]", 0, cmToPt(0.5), {
 							width: newDoc.page.width,
 							height: FONTSIZE + 0.1,
 							align: 'center'
@@ -341,8 +341,8 @@ function createPDF(excelFile, imgPath, output, csvFile) {
 			});
 		newDoc.end();
 
-		deleteFolderRecursive(imgPath + '/temp');
-		deleteFolderRecursive(imgPath + '/strings');
+		//deleteFolderRecursive(imgPath + '/temp');
+		//deleteFolderRecursive(imgPath + '/strings');
 
 	}
 	readExcel(excelFile, imgPath, writeData, csvFile);
@@ -420,7 +420,7 @@ function pageCheck(items, x, y, doc) {
 		doc.fillColor("black")
 			.fontSize(FONTSIZE)
 			.font('Times-Roman')
-			.text('#' + items[0].id + "-[" + page_number + s, 0, cmToPt(0.5), {
+			.text('#' + items[0].id + " - [" + page_number + s, 0, cmToPt(0.5), {
 				width: doc.page.width,
 				height: FONTSIZE + 0.1,
 				align: 'center'
